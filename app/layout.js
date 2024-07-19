@@ -11,6 +11,20 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="module"
+          src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.min.mjs"
+        ></script>
+        <script
+          type="module"
+          src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf_viewer.min.css"
+        ></script>
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.worker.mjs"
+          type="module"
+        ></script>
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
