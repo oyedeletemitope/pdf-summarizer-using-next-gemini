@@ -6,6 +6,7 @@ export default function Home() {
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const savedTitle = localStorage.getItem("title");
@@ -28,6 +29,7 @@ export default function Home() {
 
   async function handleShowSummary() {
     if (file && title) {
+      setIsLoading(true); // Start loading
       const fileReader = new FileReader();
       fileReader.onload = async (event) => {
         const typedarray = new Uint8Array(event.target.result);
@@ -36,7 +38,6 @@ export default function Home() {
 
         let text = "";
 
-        // Loop through each page and get text content
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           const page = await pdf.getPage(pageNum);
           const content = await page.getTextContent();
@@ -68,9 +69,11 @@ export default function Home() {
       .then((data) => {
         setSummary(data.summary);
         setShowSummary(true);
+        setIsLoading(false); // End loading
         console.log("response:", data);
       })
       .catch((error) => {
+        setIsLoading(false); // End loading in case of error
         console.error("There was a problem with the fetch operation:", error);
       });
   }
@@ -126,7 +129,7 @@ export default function Home() {
               type="button"
               onClick={handleShowSummary}
               className="bg-blue-500 text-white px-4 py-2 rounded"
-              disabled={!file || !title}
+              disabled={!file || !title || isLoading}
             >
               Show Summary
             </button>
@@ -139,6 +142,8 @@ export default function Home() {
             </button>
           </div>
         </form>
+
+        {isLoading && <p className="text-yellow-500 mt-4">Summarizing...</p>}
 
         {showSummary && summary && (
           <div className="mt-6 p-4 border rounded bg-gray-50">
