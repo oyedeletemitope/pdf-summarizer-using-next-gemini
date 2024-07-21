@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const [summary, setSummary] = useState("");
@@ -7,6 +7,7 @@ export default function Home() {
   const [file, setFile] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const savedTitle = localStorage.getItem("title");
@@ -29,7 +30,7 @@ export default function Home() {
 
   async function handleShowSummary() {
     if (file && title) {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
       const fileReader = new FileReader();
       fileReader.onload = async (event) => {
         const typedarray = new Uint8Array(event.target.result);
@@ -69,11 +70,11 @@ export default function Home() {
       .then((data) => {
         setSummary(data.summary);
         setShowSummary(true);
-        setIsLoading(false); // End loading
+        setIsLoading(false);
         console.log("response:", data);
       })
       .catch((error) => {
-        setIsLoading(false); // End loading in case of error
+        setIsLoading(false);
         console.error("There was a problem with the fetch operation:", error);
       });
   }
@@ -82,6 +83,7 @@ export default function Home() {
     setSummary("");
     setTitle("");
     setFile(null);
+    fileInputRef.current.value = null; // Clear file input
     setShowSummary(false);
   }
 
@@ -120,6 +122,7 @@ export default function Home() {
               name="file"
               accept=".pdf"
               onChange={onFileChange}
+              ref={fileInputRef} // Add ref to file input
               className="border border-gray-300 text-black rounded p-2 mt-1 w-full"
               required
             />
